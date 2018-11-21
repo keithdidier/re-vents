@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { reduxForm, Field } from 'redux-form';
 import cuid from 'cuid';
 import { Segment, Form, Button } from 'semantic-ui-react';
 import { createEvent, updateEvent } from '../eventActions';
+import TextInput from '../../../app/common/form/TextInput';
 
 const mapState = (state, ownProps) => {
   const eventId = ownProps.match.params.id;
@@ -38,6 +40,7 @@ class EventForm extends Component {
     evt.preventDefault();
     if (this.state.event.id) {
       this.props.updateEvent(this.state.event);
+      this.props.history.goBack();
     } else {
       const newEvent = {
         ...this.state.event,
@@ -56,20 +59,16 @@ class EventForm extends Component {
   };
 
   render() {
-    const { handleCancel } = this.props;
     const { event } = this.state;
     return (
       <Segment>
         <Form onSubmit={this.onFormSubmit}>
-          <Form.Field>
-            <label>Event Title</label>
-            <input
-              onChange={this.onInputChange}
-              value={event.title}
-              name="title"
-              placeholder="Event Title"
-            />
-          </Form.Field>
+          <Field
+            name="title"
+            type="text"
+            component={TextInput}
+            placeholder="Give your event a name"
+          />
           <Form.Field>
             <label>Event Date</label>
             <input
@@ -110,7 +109,7 @@ class EventForm extends Component {
           <Button positive type="submit">
             Submit
           </Button>
-          <Button onClick={handleCancel} type="button">
+          <Button onClick={this.props.history.goBack} type="button">
             Cancel
           </Button>
         </Form>
@@ -122,4 +121,4 @@ class EventForm extends Component {
 export default connect(
   mapState,
   actions
-)(EventForm);
+)(reduxForm({ form: 'eventForm' })(EventForm));
